@@ -6,11 +6,25 @@
 /*   By: naharumi <naharumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 18:37:51 by naharumi          #+#    #+#             */
-/*   Updated: 2024/10/23 17:35:50 by naharumi         ###   ########.fr       */
+/*   Updated: 2024/10/25 12:43:22 by naharumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+
+static void	*free_arr(char **arr, int i)
+{
+	int	index;
+
+	index = 0;
+	while (index < i)
+	{
+		free(arr[index]);
+		index++;
+	}
+	free(arr);
+	return (NULL);
+}
 
 static int	word_len(char const *s, char c)
 {
@@ -33,6 +47,8 @@ static char	*get_word(char const *s, char c)
 
 	len = word_len(s, c);
 	str = malloc(sizeof(char) * (len + 1));
+	if (!str)
+		return (NULL);
 	i = 0;
 	while (i < len)
 	{
@@ -64,15 +80,13 @@ static int	word_count(char const *s, char c)
 char	**ft_split(char const *s, char c)
 {
 	int		i;
-	int		count;
 	char	**arr;
 
 	if (!s)
-		return (0);
-	count = word_count(s, c);
-	arr = (char **)malloc(sizeof(char *) * (count + 1));
+		return (NULL);
+	arr = (char **)malloc(sizeof(char *) * (word_count(s, c) + 1));
 	if (!arr)
-		return (0);
+		return (NULL);
 	i = 0;
 	while (*s)
 	{
@@ -81,11 +95,13 @@ char	**ft_split(char const *s, char c)
 		if (*s)
 		{
 			arr[i] = get_word(s, c);
+			if (arr[i] == NULL)
+				return (free_arr(arr, i));
 			i++;
 		}
 		while (*s && *s != c)
 			s++;
 	}
-	arr[count] = 0;
+	arr[i] = 0;
 	return (arr);
 }
